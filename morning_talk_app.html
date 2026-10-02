@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Morning Talk และเรื่องชี้แจง - กลุ่มงานการพยาบาลอุบัติเหตุและฉุกเฉิน</title>
+  <!-- Tailwind CSS via allowlisted CDN -->
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Prompt:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Sarabun:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
+    
+    body {
+      font-family: 'Sarabun', 'Prompt', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #f8fafc;
+      color: #1e293b;
+      -webkit-font-smoothing: antialiased;
+    }
+    
+    .font-prompt {
+      font-family: 'Prompt', sans-serif;
+    }
+    
+    /* Ocean Depths Gradient specifically for header */
+    .bg-ocean-depths {
+      background: linear-gradient(135deg, #0B2545 0%, #134074 50%, #006D77 100%);
+    }
+
+    /* Print styles for official hospital nursing document */
+    @media print {
+      body {
+        background: #ffffff;
+        color: #000000;
+        font-size: 12pt;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .print-only {
+        display: block !important;
+      }
+      .shadow-sm, .shadow, .shadow-md, .shadow-lg {
+        box-shadow: none !important;
+      }
+      .border {
+        border-color: #cbd5e1 !important;
+      }
+    }
+    
+    .print-only {
+      display: none;
+    }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #94a3b8;
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between">
+
+  <!-- ==================== HEADER (OCEAN DEPTHS & ALL WHITE TEXT) ==================== -->
+  <header class="bg-ocean-depths shadow-md relative overflow-hidden">
+    <!-- Decorative background glow -->
+    <div class="absolute -right-16 -top-16 w-80 h-80 rounded-full bg-cyan-400 opacity-10 blur-3xl pointer-events-none"></div>
+    <div class="absolute left-10 -bottom-20 w-64 h-64 rounded-full bg-blue-500 opacity-10 blur-2xl pointer-events-none"></div>
+
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8 relative z-10">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        
+        <!-- Left Column: Title & Department -->
+        <div class="space-y-2">
+          <!-- Department Badge -->
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 backdrop-blur-sm border border-white/25">
+            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+            </svg>
+            <span class="text-white text-xs sm:text-sm font-medium tracking-wide">กลุ่มงานการพยาบาลอุบัติเหตุและฉุกเฉิน</span>
+          </div>
+
+          <!-- Main Title -->
+          <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold font-prompt text-white tracking-tight">
+            Morning talk และเรื่องชี้แจง
+          </h1>
+
+          <!-- Subtitle / Clinical Description -->
+          <p class="text-white text-sm sm:text-base font-light max-w-2xl opacity-95">
+            ระบบบันทึกและติดตามการสื่อสารประจำวัน เพื่อความปลอดภัยของผู้ป่วย (2P Safety) และการส่งต่อข้อมูลเวรพยาบาลอย่างไร้รอยต่อ
+          </p>
+        </div>
+
+        <!-- Right Column: Connection Status & Daily Meeting Badge -->
+        <div class="flex flex-col items-start md:items-end justify-center space-y-2 pt-2 md:pt-0 border-t md:border-t-0 border-white/15">
+          <!-- Connection Status Indicator -->
+          <div id="connectionStatusPill" class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/15 backdrop-blur-sm border border-white/30 text-white text-xs sm:text-sm font-medium shadow-sm">
+            <span class="relative flex h-2.5 w-2.5">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-300 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-400"></span>
+            </span>
+            <span class="text-white" id="connectionStatusText">สถานะการเชื่อมต่อ: พร้อมใช้งาน</span>
+          </div>
+
+          <!-- Required Label: บันทึกการประชุมประจำวัน (Placed under connection status) -->
+          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-white/20 backdrop-blur-sm border border-white/30 text-white text-xs sm:text-sm font-semibold tracking-wide shadow-sm">
+            <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <span class="text-white">บันทึกการประชุมประจำวัน</span>
+          </div>
+
+          <div class="text-white text-xs opacity-90 hidden sm:block">
+            สำหรับพยาบาลวิชาชีพและทีมสหสาขาวิชาชีพ
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== MAIN CONTENT CONTAINER ==================== -->
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8 flex-1 w-full space-y-6">
+
+    <!-- Notification Toast -->
+    <div id="toastNotification" class="fixed bottom-5 right-5 z-50 transform translate-y-24 opacity-0 transition-all duration-300 pointer-events-none">
+      <div class="bg-slate-900 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 border border-slate-700">
+        <div class="w-7 h-7 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">✓</div>
+        <div class="text-sm font-medium" id="toastMessage">บันทึกข้อมูลเรียบร้อยแล้ว</div>
+      </div>
+    </div>
+
+    <!-- METADATA CARD (DATE, TIME, LEADER, SHIFT) -->
+    <div class="bg-white rounded-2xl p-5 sm:p-6 shadow-sm border border-slate-200/80 transition-all">
+      <div class="flex items-center gap-2 mb-4 pb-2 border-b border-slate-100">
+        <svg class="w-5 h-5 text-[#006D77]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <h2 class="text-base sm:text-lg font-bold font-prompt text-slate-800">ข้อมูลพื้นฐานการประชุมประจำวัน</h2>
+        <span class="text-xs text-slate-500 ml-auto bg-slate-100 px-2 py-0.5 rounded">ER Huddle System</span>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Date -->
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1.5" for="recordDate">
+            วัน/เดือน/ปี <span class="text-rose-500">*</span>
+          </label>
+          <input type="date" id="recordDate" class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#006D77] focus:bg-white transition-all text-slate-800">
+        </div>
+
+        <!-- Time -->
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1.5" for="recordTime">
+            เวลา <span class="text-rose-500">*</span>
+          </label>
+          <input type="time" id="recordTime" class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#006D77] focus:bg-white transition-all text-slate-800">
+        </div>
+
+        <!-- Leader / Recorder Name -->
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1.5" for="nurseLeader">
+            ผู้ดำเนินการชี้แจง / หัวหน้าเวร
+          </label>
+          <input type="text" id="nurseLeader" placeholder="เช่น พว. ชำนาญการ (หัวหน้าหอผู้ป่วย)" class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#006D77] focus:bg-white transition-all text-slate-800">
+        </div>
+
+        <!-- Shift -->
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1.5" for="nurseShift">
+            เวร / ช่วงการปฏิบัติงาน
+          </label>
+          <select id="nurseShift" class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#006D77] focus:bg-white transition-all text-slate-800">
+            <option value="เวรเช้า (08:00 - 16:00 น.)">เวรเช้า (08:00 - 16:00 น.)</option>
+            <option value="เวรบ่าย (16:00 - 24:00 น.)">เวรบ่าย (16:00 - 24:00 น.)</option>
+            <option value="เวรดึก (24:00 - 08:00 น.)">เวรดึก (24:00 - 08:00 น.)</option>
+            <option value="การประชุมพิเศษ / วาระเร่งด่วน">การประชุมพิเศษ / วาระเร่งด่วน</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- QUICK STATS & SUMMARY BAR -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div class="bg-white rounded-xl p-3.5 border border-slate-200/80 shadow-xs flex items-center gap-3">
+        <div class="w-9 h-9 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-sm">7</div>
+        <div>
+          <div class="text-xs text-slate-500">หัวข้อทั้งหมด</div>
+          <div class="text-sm font-semibold text-slate-800">7 วาระการชี้แจง</div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl p-3.5 border border-slate-200/80 shadow-xs flex items-center gap-3">
+        <div class="w-9 h-9 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-sm" id="statInProgress">0</div>
+        <div>
+          <div class="text-xs text-slate-500">กำลังดำเนินการ</div>
+          <div class="text-sm font-semibold text-amber-700">ต้องติดตามผล</div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl p-3.5 border border-slate-200/80 shadow-xs flex items-center gap-3">
+        <div class="w-9 h-9 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center font-bold text-sm" id="statDone">0</div>
+        <div>
+          <div class="text-xs text-slate-500">ดำเนินการแล้ว</div>
+          <div class="text-sm font-semibold text-sky-700">แจ้งทราบแล้ว</div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl p-3.5 border border-slate-200/80 shadow-xs flex items-center gap-3">
+        <div class="w-9 h-9 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-sm" id="statCompleted">0</div>
+        <div>
+          <div class="text-xs text-slate-500">ดำเนินการเสร็จสิ้น</div>
+          <div class="text-sm font-semibold text-emerald-700">เสร็จสมบูรณ์</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== 7 TOPIC CARDS SECTION ==================== -->
+    <div class="space-y-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="w-2.5 h-6 bg-[#006D77] rounded-full"></span>
+          <h2 class="text-lg font-bold font-prompt text-slate-800">รายการเรื่องชี้แจงประจำวัน</h2>
+        </div>
+        <span class="text-xs text-slate-500 italic">มีปุ่มกดบันทึกของแต่ละเรื่องแยกอิสระ</span>
+      </div>
+
+      <!-- Container for rendered topic cards -->
+      <div id="topicCardsContainer" class="space-y-4">
+        <!-- Cards generated by JavaScript -->
+      </div>
+    </div>
+
+    <!-- ==================== ACTIONS & GOOGLE FORMS INTEGRATION ==================== -->
+    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 space-y-5">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-4 border-b border-slate-100">
+        <div>
+          <h3 class="text-base font-bold font-prompt text-slate-800 flex items-center gap-2">
+            <svg class="w-5 h-5 text-[#006D77]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+            </svg>
+            การจัดการข้อมูล & บันทึกส่งออก
+          </h3>
+          <p class="text-xs text-slate-500">เลือกรูปแบบการบันทึก การเชื่อมโยง Google Forms หรือส่งออกข้อความสรุปสำหรับเวร</p>
+        </div>
+        <div class="text-xs text-slate-400" id="lastSavedIndicator">
+          ยังไม่มีการบันทึกในเซสชันนี้
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        <!-- Save All to LocalStorage -->
+        <button onclick="saveAllTopics()" class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-[#006D77] hover:bg-[#0B2545] text-white font-medium text-sm rounded-xl shadow-sm transition-all active:scale-98">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+          </svg>
+          บันทึกข้อมูลทุกหัวข้อ
+        </button>
+
+        <!-- Google Forms Sync -->
+        <button onclick="openGoogleFormModal()" class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-sm rounded-xl shadow-sm transition-all active:scale-98">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          ลงข้อมูลใน Google Form
+        </button>
+
+        <!-- Copy for LINE Group -->
+        <button onclick="copyLineSummary()" class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-[#06C755] hover:bg-[#05b04c] text-white font-medium text-sm rounded-xl shadow-sm transition-all active:scale-98">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+          </svg>
+          คัดลอกสรุปส่ง LINE กลุ่ม
+        </button>
+
+        <!-- Print / PDF A4 -->
+        <button onclick="window.print()" class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-slate-700 hover:bg-slate-800 text-white font-medium text-sm rounded-xl shadow-sm transition-all active:scale-98">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+          </svg>
+          พิมพ์รายงาน / บันทึกเป็น PDF
+        </button>
+      </div>
+
+      <!-- Quick Helper Note -->
+      <div class="bg-amber-50/70 border border-amber-200/80 rounded-xl p-3.5 text-xs text-amber-900 flex items-start gap-2.5">
+        <svg class="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <div>
+          <span class="font-bold">คำแนะนำสำหรับหัวหน้าหอผู้ป่วย:</span> ข้อมูลจะถูกบันทึกสำรองไว้ในเครื่อง (Local Storage) ทันทีที่กดปุ่มบันทึกแต่ละเรื่อง และสามารถกด <strong>"ลงข้อมูลใน Google Form"</strong> เพื่อส่งขึ้นระบบคลาวด์ส่วนกลางของโรงพยาบาลให้เจ้าหน้าที่และผู้บริหารค้นหาย้อนหลังได้สะดวกรวดเร็ว
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== HISTORY & SEARCH SECTION ==================== -->
+    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-3 border-b border-slate-100">
+        <div>
+          <h3 class="text-base font-bold font-prompt text-slate-800 flex items-center gap-2">
+            <svg class="w-5 h-5 text-[#006D77]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            ประวัติการบันทึกข้อมูลย้อนหลังในเครื่องนี้
+          </h3>
+          <p class="text-xs text-slate-500">เรียกดูข้อมูลที่เคยบันทึกไว้ และติดตามสถานะงานที่ยังค้างดำเนินการ</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="clearCurrentForm()" class="text-xs text-slate-500 hover:text-slate-800 px-3 py-1.5 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 transition-all">
+            + ขึ้นวันใหม่ (ล้างแบบฟอร์ม)
+          </button>
+        </div>
+      </div>
+
+      <!-- History List Container -->
+      <div id="historyListContainer" class="space-y-2 max-h-60 overflow-y-auto pr-1">
+        <div class="text-center py-6 text-slate-400 text-xs">
+          ยังไม่มีประวัติการบันทึก ให้กดปุ่ม "บันทึกข้อมูลทุกหัวข้อ" เพื่อเริ่มจัดเก็บประวัติ
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ==================== PRINT TEMPLATE (A4 OFFICIAL REPORT) ==================== -->
+  <div class="print-only p-8 max-w-4xl mx-auto">
+    <div class="text-center border-b-2 border-slate-800 pb-4 mb-6">
+      <h1 class="text-xl font-bold">บันทึกการประชุมประจำวัน (Morning Talk และเรื่องชี้แจง)</h1>
+      <h2 class="text-base font-medium text-slate-700">กลุ่มงานการพยาบาลอุบัติเหตุและฉุกเฉิน</h2>
+      <p class="text-xs text-slate-500 mt-1" id="printMetaSummary">วันที่ ... เวลา ... | ผู้ดำเนินการ: ...</p>
+    </div>
+
+    <div id="printTopicsList" class="space-y-4 text-sm">
+      <!-- Populated dynamically during print -->
+    </div>
+
+    <div class="mt-12 pt-8 border-t border-slate-300 grid grid-cols-2 gap-8 text-center text-xs">
+      <div>
+        <p class="mb-10">ลงชื่อ..........................................................</p>
+        <p>(..........................................................)</p>
+        <p class="text-slate-600">พยาบาลวิชาชีพ / ผู้บันทึกการประชุม</p>
+      </div>
+      <div>
+        <p class="mb-10">ลงชื่อ..........................................................</p>
+        <p>(..........................................................)</p>
+        <p class="text-slate-600">หัวหน้าหอผู้ป่วย / หัวหน้ากลุ่มงานการพยาบาล</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== GOOGLE FORM MODAL ==================== -->
+  <div id="googleFormModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]">
+      <!-- Modal Header -->
+      <div class="bg-gradient-to-r from-[#0B2545] to-[#006D77] p-5 text-white flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center font-bold">
+            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+          </div>
+          <div>
+            <h3 class="font-bold font-prompt text-base">เชื่อมโยงและส่งข้อมูลเข้า Google Forms / Sheets</h3>
+            <p class="text-xs text-white/80">จัดเก็บข้อมูลคลาวด์ฟรี 100% ค้นหาย้อนหลังได้ทันที</p>
+          </div>
+        </div>
+        <button onclick="closeGoogleFormModal()" class="text-white/80 hover:text-white p-1 rounded-lg">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="p-6 overflow-y-auto space-y-4 text-sm text-slate-700">
+        <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 text-xs text-blue-900 leading-relaxed">
+          <strong>วิธีใช้งานฟรีของหน่วยงาน:</strong> ท่านสามารถนำลิงก์ <strong>Google Form</strong> หรือ <strong>Google Apps Script Webhook</strong> ของกลุ่มงานมาวางที่ช่องด้านล่างนี้ ข้อมูล Morning Talk ประจำวันจะถูกส่งไปบันทึกลง Google Sheet แบบอัตโนมัติ
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1" for="googleFormUrlInput">
+            ลิงก์ Google Form หรือ Web App URL (บันทึกไว้ใช้ในครั้งถัดไปได้)
+          </label>
+          <input type="text" id="googleFormUrlInput" placeholder="https://docs.google.com/forms/d/e/.../viewform หรือ https://script.google.com/..." class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#006D77] focus:outline-none">
+        </div>
+
+        <!-- Preview of Data to be Submitted -->
+        <div class="border border-slate-200 rounded-xl p-3.5 bg-slate-50">
+          <div class="text-xs font-semibold text-slate-600 mb-2 flex items-center justify-between">
+            <span>ตัวอย่างข้อมูลสรุปที่จะส่งออก (Morning Brief Summary)</span>
+            <span class="text-emerald-600 font-normal">พร้อมส่งทันที</span>
+          </div>
+          <pre id="summaryPreviewBox" class="text-xs font-mono bg-white p-3 rounded-lg border border-slate-200 text-slate-800 whitespace-pre-wrap max-h-48 overflow-y-auto"></pre>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="bg-slate-50 px-6 py-4 border-t border-slate-200 flex flex-wrap items-center justify-end gap-2.5">
+        <button onclick="closeGoogleFormModal()" class="px-4 py-2 text-xs font-medium text-slate-600 hover:text-slate-800 rounded-lg">
+          ปิดหน้าต่าง
+        </button>
+        <button onclick="copyLineSummary()" class="px-4 py-2 bg-[#06C755] text-white text-xs font-medium rounded-lg hover:bg-[#05b04c] flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+          </svg>
+          คัดลอกข้อความสรุป
+        </button>
+        <button onclick="submitToGoogleForm()" class="px-4 py-2 bg-emerald-600 text-white text-xs font-medium rounded-lg hover:bg-emerald-700 flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+          </svg>
+          เปิดฟอร์มเพื่อส่งข้อมูล
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="bg-slate-900 text-white py-6 border-t border-slate-800 text-xs mt-10">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-2">
+        <div class="w-2.5 h-2.5 rounded-full bg-emerald-400"></div>
+        <span class="font-medium">กลุ่มงานการพยาบาลอุบัติเหตุและฉุกเฉิน</span>
+        <span class="text-slate-500">|</span>
+        <span class="text-slate-400">พัฒนาเพื่อส่งเสริมความปลอดภัยผู้ป่วยและการสื่อสารที่มีประสิทธิภาพ</span>
+      </div>
+      <div class="text-slate-400">
+        เข้าถึงได้ฟรีบนมือถือ แท็บเล็ต และคอมพิวเตอร์ทุกเครื่องในแผนก
+      </div>
+    </div>
+  </footer>
+
+  <!-- ==================== JAVASCRIPT LOGIC ==================== -->
+  <script>
+    // Definition of topics requested by the user: 1 to 6, plus "หัวข้ออื่นๆ/เรื่องเพิ่มเติม"
+    const TOPICS_CONFIG = [
+      { id: 1, title: "เรื่องชี้แจงหัวข้อที่ 1", subtitle: "นโยบาย/ระเบียบปฏิบัติ หรือประเด็นสำคัญประจำวัน", placeholder: "ระบุรายละเอียดเรื่องชี้แจง เช่น นโยบายโรงพยาบาล, แนวทางปฏิบัติใหม่..." },
+      { id: 2, title: "เรื่องชี้แจงหัวข้อที่ 2", subtitle: "ความปลอดภัยของผู้ป่วยและการบริหารยา (Patient Safety / HAD)", placeholder: "ระบุประเด็นความปลอดภัย, การเฝ้าระวังยาความเสี่ยงสูง, การระบุตัวผู้ป่วย..." },
+      { id: 3, title: "เรื่องชี้แจงหัวข้อที่ 3", subtitle: "ระบบทางด่วนและการดูแลฉุกเฉิน (CPR / Stroke / STEMI / Trauma Fast Track)", placeholder: "ระบุสถิติ, ข้อควรระวัง, หรือแนวทางพัฒนา Fast Track..." },
+      { id: 4, title: "เรื่องชี้แจงหัวข้อที่ 4", subtitle: "การตรวจสอบและใช้อุปกรณ์ทางการแพทย์ (Defibrillator / Ventilator / Monitor)", placeholder: "ระบุความพร้อมของเครื่องมือ, การส่งซ่อม, หรือการบำรุงรักษาอุปกรณ์..." },
+      { id: 5, title: "เรื่องชี้แจงหัวข้อที่ 5", subtitle: "สิ่งแวดล้อมและการควบคุมการติดเชื้อ (IC / Environmental Safety)", placeholder: "ระบุมาตรการควบคุมเชื้อ, การแยกผู้ป่วย, ขยะติดเชื้อ, ความสะอาดพื้นที่..." },
+      { id: 6, title: "เรื่องชี้แจงหัวข้อที่ 6", subtitle: "การประสานงานและการส่งต่อ (Referral / Admission / Coordination)", placeholder: "ระบุการประสานงานกับแผนกอื่น เช่น Lab, X-ray, ICU, Ward, กู้ชีพ 1669..." },
+      { id: 7, title: "หัวข้ออื่นๆ / เรื่องเพิ่มเติม", subtitle: "ประเด็นปัญหา อุปสรรค และข้อเสนอแนะในการทำงาน", placeholder: "ระบุข้อคิดเห็นเพิ่มเติม, กำลังคน, การแลกเวร, หรือเรื่องแจ้งเพื่อทราบอื่นๆ..." }
+    ];
+
+    // Status Options required: "ดำเนินการแล้ว", "กำลังดำเนินการ", "ดำเนินการเสร็จสิ้น"
+    const STATUS_OPTIONS = [
+      { key: "กำลังดำเนินการ", label: "กำลังดำเนินการ", bgClass: "bg-amber-50 text-amber-700 border-amber-300 peer-checked:bg-amber-500 peer-checked:text-white" },
+      { key: "ดำเนินการแล้ว", label: "ดำเนินการแล้ว", bgClass: "bg-sky-50 text-sky-700 border-sky-300 peer-checked:bg-sky-600 peer-checked:text-white" },
+      { key: "ดำเนินการเสร็จสิ้น", label: "ดำเนินการเสร็จสิ้น", bgClass: "bg-emerald-50 text-emerald-700 border-emerald-300 peer-checked:bg-emerald-600 peer-checked:text-white" }
+    ];
+
+    // State object
+    let appData = {
+      date: "",
+      time: "",
+      leader: "",
+      shift: "เวรเช้า (08:00 - 16:00 น.)",
+      topics: {},
+      googleFormUrl: ""
+    };
+
+    // Initialize Page
+    document.addEventListener("DOMContentLoaded", () => {
+      initDateTime();
+      loadStoredSettings();
+      renderTopicCards();
+      loadTodayData();
+      updateStats();
+      renderHistoryList();
+    });
+
+    // Set Default Date (Today) and Time (Current)
+    function initDateTime() {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+
+      const dateInput = document.getElementById("recordDate");
+      const timeInput = document.getElementById("recordTime");
+
+      if (!dateInput.value) dateInput.value = `${year}-${month}-${day}`;
+      if (!timeInput.value) timeInput.value = `${hours}:${minutes}`;
+
+      appData.date = dateInput.value;
+      appData.time = timeInput.value;
+
+      dateInput.addEventListener("change", (e) => {
+        appData.date = e.target.value;
+        loadDataForDate(appData.date);
+      });
+      timeInput.addEventListener("change", (e) => {
+        appData.time = e.target.value;
+      });
+      document.getElementById("nurseLeader").addEventListener("input", (e) => {
+        appData.leader = e.target.value;
+      });
+      document.getElementById("nurseShift").addEventListener("change", (e) => {
+        appData.shift = e.target.value;
+      });
+    }
+
+    // Render 7 Topic Cards
+    function renderTopicCards() {
+      const container = document.getElementById("topicCardsContainer");
+      container.innerHTML = "";
+
+      TOPICS_CONFIG.forEach(topic => {
+        const card = document.createElement("div");
+        card.className = "bg-white rounded-2xl p-5 sm:p-6 shadow-xs border border-slate-200/80 transition-all hover:border-slate-300 relative";
+        card.id = `card-topic-${topic.id}`;
+
+        card.innerHTML = `
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-3 mb-4 border-b border-slate-100">
+            <div class="flex items-center gap-3">
+              <span class="w-8 h-8 rounded-xl bg-gradient-to-br from-[#0B2545] to-[#006D77] text-white flex items-center justify-center font-bold text-sm shadow-xs">
+                ${topic.id}
+              </span>
+              <div>
+                <h3 class="text-base font-bold font-prompt text-slate-800">${topic.title}</h3>
+                <p class="text-xs text-slate-500">${topic.subtitle}</p>
+              </div>
+            </div>
+
+            <!-- Individual Save Indicator Badge -->
+            <div class="flex items-center gap-2 self-end sm:self-auto">
+              <span id="topic-saved-badge-${topic.id}" class="text-[11px] px-2.5 py-1 rounded-md bg-slate-100 text-slate-500 font-medium transition-all">
+                ยังไม่ได้บันทึก
+              </span>
+            </div>
+          </div>
+
+          <!-- Topic Note / Content Area -->
+          <div class="space-y-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1" for="topic-content-${topic.id}">
+                เนื้อหา / ข้อความที่ชี้แจงในที่ประชุม
+              </label>
+              <textarea id="topic-content-${topic.id}" rows="2" placeholder="${topic.placeholder}"
+                class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#006D77] focus:bg-white transition-all text-slate-800 placeholder:text-slate-400 resize-y"></textarea>
+            </div>
+
+            <!-- Status Choice: "ดำเนินการแล้ว", "กำลังดำเนินการ", "ดำเนินการเสร็จสิ้น" & Individual Save Button -->
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pt-2">
+              
+              <!-- Status Radios -->
+              <div class="space-y-1">
+                <span class="block text-[11px] font-semibold text-slate-500">สถานะการดำเนินงาน:</span>
+                <div class="flex flex-wrap items-center gap-2">
+                  ${STATUS_OPTIONS.map((opt, idx) => `
+                    <label class="cursor-pointer">
+                      <input type="radio" name="status-topic-${topic.id}" value="${opt.key}" ${idx === 1 ? 'checked' : ''} onchange="onStatusChange(${topic.id})" class="peer sr-only">
+                      <span class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border transition-all ${opt.bgClass}">
+                        <span>${opt.label}</span>
+                      </span>
+                    </label>
+                  `).join('')}
+                </div>
+              </div>
+
+              <!-- Individual Save Button for each topic -->
+              <div class="flex items-center gap-2 self-end md:self-end pt-2 md:pt-0">
+                <button type="button" onclick="saveSingleTopic(${topic.id})" id="btn-save-topic-${topic.id}"
+                  class="inline-flex items-center gap-1.5 px-4 py-2 bg-slate-100 hover:bg-[#006D77] text-slate-700 hover:text-white text-xs font-medium rounded-xl border border-slate-300 hover:border-transparent transition-all shadow-xs active:scale-95">
+                  <svg class="w-3.5 h-3.5 text-current" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                  </svg>
+                  <span>บันทึกเรื่องนี้</span>
+                </button>
+              </div>
+
+            </div>
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+    }
+
+    // Save Single Topic
+    function saveSingleTopic(topicId) {
+      const contentElem = document.getElementById(`topic-content-${topicId}`);
+      const selectedStatusElem = document.querySelector(`input[name="status-topic-${topicId}"]:checked`);
+      const statusValue = selectedStatusElem ? selectedStatusElem.value : "กำลังดำเนินการ";
+      const contentValue = contentElem ? contentElem.value.trim() : "";
+
+      const topicInfo = TOPICS_CONFIG.find(t => t.id === topicId);
+
+      appData.topics[topicId] = {
+        id: topicId,
+        title: topicInfo.title,
+        content: contentValue,
+        status: statusValue,
+        updatedAt: new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })
+      };
+
+      // Visual Feedback on Badge
+      const badge = document.getElementById(`topic-saved-badge-${topicId}`);
+      if (badge) {
+        badge.className = "text-[11px] px-2.5 py-1 rounded-md bg-emerald-100 text-emerald-800 font-semibold flex items-center gap-1 transition-all";
+        badge.innerHTML = `✓ บันทึกแล้ว (${appData.topics[topicId].updatedAt} น.)`;
+      }
+
+      // Visual Feedback on Button
+      const btn = document.getElementById(`btn-save-topic-${topicId}`);
+      if (btn) {
+        const originalText = btn.innerHTML;
+        btn.className = "inline-flex items-center gap-1.5 px-4 py-2 bg-emerald-600 text-white text-xs font-medium rounded-xl transition-all shadow-xs";
+        btn.innerHTML = `<span>✓ บันทึกสำเร็จ</span>`;
+        setTimeout(() => {
+          btn.className = "inline-flex items-center gap-1.5 px-4 py-2 bg-slate-100 hover:bg-[#006D77] text-slate-700 hover:text-white text-xs font-medium rounded-xl border border-slate-300 hover:border-transparent transition-all shadow-xs";
+          btn.innerHTML = originalText;
+        }, 2000);
+      }
+
+      // Persist to LocalStorage
+      persistCurrentRecord();
+      updateStats();
+      showToast(`บันทึก "${topicInfo.title}" สำเร็จ`);
+    }
+
+    // Save All Topics
+    function saveAllTopics() {
+      TOPICS_CONFIG.forEach(t => {
+        const contentElem = document.getElementById(`topic-content-${t.id}`);
+        const selectedStatusElem = document.querySelector(`input[name="status-topic-${t.id}"]:checked`);
+        const statusValue = selectedStatusElem ? selectedStatusElem.value : "กำลังดำเนินการ";
+        const contentValue = contentElem ? contentElem.value.trim() : "";
+
+        appData.topics[t.id] = {
+          id: t.id,
+          title: t.title,
+          content: contentValue,
+          status: statusValue,
+          updatedAt: new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })
+        };
+
+        const badge = document.getElementById(`topic-saved-badge-${t.id}`);
+        if (badge) {
+          badge.className = "text-[11px] px-2.5 py-1 rounded-md bg-emerald-100 text-emerald-800 font-semibold flex items-center gap-1";
+          badge.innerHTML = `✓ บันทึกแล้ว (${appData.topics[t.id].updatedAt} น.)`;
+        }
+      });
+
+      persistCurrentRecord();
+      updateStats();
+      renderHistoryList();
+      showToast("บันทึกข้อมูลการประชุมทุกหัวข้อเรียบร้อยแล้ว");
+
+      const lastSavedIndicator = document.getElementById("lastSavedIndicator");
+      if (lastSavedIndicator) {
+        lastSavedIndicator.innerText = `บันทึกสมบูรณ์เมื่อ ${new Date().toLocaleTimeString('th-TH')} น.`;
+      }
+    }
+
+    function onStatusChange(topicId) {
+      updateStats();
+    }
+
+    // Update Statistic Counters
+    function updateStats() {
+      let inProgressCount = 0;
+      let doneCount = 0;
+      let completedCount = 0;
+
+      TOPICS_CONFIG.forEach(t => {
+        const selected = document.querySelector(`input[name="status-topic-${t.id}"]:checked`);
+        if (selected) {
+          if (selected.value === "กำลังดำเนินการ") inProgressCount++;
+          else if (selected.value === "ดำเนินการแล้ว") doneCount++;
+          else if (selected.value === "ดำเนินการเสร็จสิ้น") completedCount++;
+        }
+      });
+
+      document.getElementById("statInProgress").innerText = inProgressCount;
+      document.getElementById("statDone").innerText = doneCount;
+      document.getElementById("statCompleted").innerText = completedCount;
+    }
+
+    // Persist Record to Browser LocalStorage
+    function persistCurrentRecord() {
+      const recordKey = `morning_talk_${appData.date}`;
+      const payload = {
+        date: appData.date,
+        time: appData.time,
+        leader: appData.leader,
+        shift: appData.shift,
+        topics: appData.topics,
+        savedAt: new Date().toISOString()
+      };
+
+      localStorage.setItem(recordKey, JSON.stringify(payload));
+
+      // Also maintain index of stored dates
+      let datesIndex = JSON.parse(localStorage.getItem("morning_talk_dates_index") || "[]");
+      if (!datesIndex.includes(appData.date)) {
+        datesIndex.unshift(appData.date);
+        localStorage.setItem("morning_talk_dates_index", JSON.stringify(datesIndex));
+      }
+    }
+
+    // Load Today's data or existing data for date
+    function loadTodayData() {
+      const today = document.getElementById("recordDate").value;
+      loadDataForDate(today);
+    }
+
+    function loadDataForDate(dateStr) {
+      const recordKey = `morning_talk_${dateStr}`;
+      const stored = localStorage.getItem(recordKey);
+
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          if (parsed.time) document.getElementById("recordTime").value = parsed.time;
+          if (parsed.leader) document.getElementById("nurseLeader").value = parsed.leader;
+          if (parsed.shift) document.getElementById("nurseShift").value = parsed.shift;
+          
+          appData.time = parsed.time || appData.time;
+          appData.leader = parsed.leader || "";
+          appData.shift = parsed.shift || appData.shift;
+          appData.topics = parsed.topics || {};
+
+          // Populate fields
+          Object.values(appData.topics).forEach(t => {
+            const contentElem = document.getElementById(`topic-content-${t.id}`);
+            if (contentElem) contentElem.value = t.content || "";
+
+            const radio = document.querySelector(`input[name="status-topic-${t.id}"][value="${t.status}"]`);
+            if (radio) radio.checked = true;
+
+            const badge = document.getElementById(`topic-saved-badge-${t.id}`);
+            if (badge && t.updatedAt) {
+              badge.className = "text-[11px] px-2.5 py-1 rounded-md bg-emerald-100 text-emerald-800 font-semibold flex items-center gap-1";
+              badge.innerHTML = `✓ บันทึกแล้ว (${t.updatedAt} น.)`;
+            }
+          });
+
+          showToast(`โหลดข้อมูลของวันที่ ${dateStr} เรียบร้อย`);
+        } catch (e) {
+          console.error(e);
+        }
+      } else {
+        // Reset topic inputs for new day
+        TOPICS_CONFIG.forEach(t => {
+          const contentElem = document.getElementById(`topic-content-${t.id}`);
+          if (contentElem) contentElem.value = "";
+          const defaultRadio = document.querySelector(`input[name="status-topic-${t.id}"][value="กำลังดำเนินการ"]`);
+          if (defaultRadio) defaultRadio.checked = true;
+          const badge = document.getElementById(`topic-saved-badge-${t.id}`);
+          if (badge) {
+            badge.className = "text-[11px] px-2.5 py-1 rounded-md bg-slate-100 text-slate-500 font-medium";
+            badge.innerText = "ยังไม่ได้บันทึก";
+          }
+        });
+        appData.topics = {};
+      }
+      updateStats();
+    }
+
+    // Render Local History List
+    function renderHistoryList() {
+      const container = document.getElementById("historyListContainer");
+      const datesIndex = JSON.parse(localStorage.getItem("morning_talk_dates_index") || "[]");
+
+      if (datesIndex.length === 0) {
+        container.innerHTML = `<div class="text-center py-6 text-slate-400 text-xs">ยังไม่มีประวัติการบันทึก</div>`;
+        return;
+      }
+
+      container.innerHTML = datesIndex.slice(0, 10).map(d => {
+        const itemStr = localStorage.getItem(`morning_talk_${d}`);
+        let leaderStr = "-";
+        let shiftStr = "-";
+        if (itemStr) {
+          try {
+            const parsed = JSON.parse(itemStr);
+            leaderStr = parsed.leader || "ไม่ระบุผู้บันทึก";
+            shiftStr = parsed.shift || "เวรเช้า";
+          } catch(e) {}
+        }
+
+        return `
+          <div class="flex items-center justify-between p-3 rounded-xl border border-slate-200/80 bg-slate-50 hover:bg-slate-100/80 transition-all text-xs">
+            <div class="flex items-center gap-3">
+              <span class="font-bold text-slate-700">${formatThaiDate(d)}</span>
+              <span class="text-slate-500">${shiftStr}</span>
+              <span class="text-slate-400 hidden sm:inline">ผู้บันทึก: ${leaderStr}</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="loadHistoricalDate('${d}')" class="px-2.5 py-1 rounded bg-[#006D77] text-white hover:bg-[#0B2545] text-[11px] font-medium transition-all">
+                เปิดดู / แก้ไข
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function loadHistoricalDate(dateStr) {
+      document.getElementById("recordDate").value = dateStr;
+      appData.date = dateStr;
+      loadDataForDate(dateStr);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function clearCurrentForm() {
+      if (confirm("ต้องการล้างแบบฟอร์มเพื่อบันทึกวันใหม่หรือไม่? (ข้อมูลเดิมของวันที่บันทึกไปแล้วยังคงถูกเก็บไว้)")) {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        document.getElementById("recordDate").value = `${year}-${month}-${day}`;
+        initDateTime();
+        loadDataForDate(document.getElementById("recordDate").value);
+      }
+    }
+
+    // Format Date into Thai string
+    function formatThaiDate(dateStr) {
+      if (!dateStr) return "";
+      const parts = dateStr.split("-");
+      if (parts.length !== 3) return dateStr;
+      const thMonths = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
+      const day = parseInt(parts[2], 10);
+      const monthIdx = parseInt(parts[1], 10) - 1;
+      const yearBE = parseInt(parts[0], 10) + 543;
+      return `${day} ${thMonths[monthIdx]} ${yearBE}`;
+    }
+
+    // Generate Formatted Summary for LINE and Reports
+    function generateSummaryText() {
+      const dateVal = document.getElementById("recordDate").value;
+      const timeVal = document.getElementById("recordTime").value;
+      const leaderVal = document.getElementById("nurseLeader").value || "พยาบาลวิชาชีพเวร";
+      const shiftVal = document.getElementById("nurseShift").value;
+
+      let text = `📢 สรุป Morning talk และเรื่องชี้แจง\n`;
+      text += `🏥 กลุ่มงานการพยาบาลอุบัติเหตุและฉุกเฉิน\n`;
+      text += `📅 วันที่: ${formatThaiDate(dateVal)} เวลา ${timeVal} น.\n`;
+      text += `👩‍⚕️ ผู้ดำเนินการ: ${leaderVal} (${shiftVal})\n`;
+      text += `----------------------------------------\n`;
+
+      TOPICS_CONFIG.forEach(t => {
+        const contentElem = document.getElementById(`topic-content-${t.id}`);
+        const selected = document.querySelector(`input[name="status-topic-${t.id}"]:checked`);
+        const content = contentElem ? contentElem.value.trim() : "";
+        const status = selected ? selected.value : "กำลังดำเนินการ";
+
+        let statusIcon = "⏳";
+        if (status === "ดำเนินการแล้ว") statusIcon = "🔄";
+        if (status === "ดำเนินการเสร็จสิ้น") statusIcon = "✅";
+
+        text += `${t.id}. ${t.title} [${statusIcon} ${status}]\n`;
+        text += content ? `   👉 ${content}\n\n` : `   👉 (ไม่มีประเด็นเพิ่มเติม)\n\n`;
+      });
+
+      text += `----------------------------------------\n`;
+      text += `📌 บันทึกการประชุมประจำวันเพื่อความปลอดภัยของผู้ป่วย (2P Safety)`;
+      return text;
+    }
+
+    // Copy LINE Summary to Clipboard
+    function copyLineSummary() {
+      const summary = generateSummaryText();
+      navigator.clipboard.writeText(summary).then(() => {
+        showToast("คัดลอกสรุปข้อความสำหรับ LINE สำเร็จเรียบร้อยแล้ว!");
+      }).catch(() => {
+        // Fallback
+        const dummy = document.createElement("textarea");
+        document.body.appendChild(dummy);
+        dummy.value = summary;
+        dummy.select();
+        document.execCommand("copy");
+        document.body.removeChild(dummy);
+        showToast("คัดลอกสรุปข้อความสำเร็จแล้ว");
+      });
+    }
+
+    // Google Form Modal Handlers
+    function openGoogleFormModal() {
+      const modal = document.getElementById("googleFormModal");
+      const previewBox = document.getElementById("summaryPreviewBox");
+      const urlInput = document.getElementById("googleFormUrlInput");
+
+      previewBox.innerText = generateSummaryText();
+      urlInput.value = localStorage.getItem("hospital_google_form_url") || "";
+
+      modal.classList.remove("hidden");
+    }
+
+    function closeGoogleFormModal() {
+      document.getElementById("googleFormModal").classList.add("hidden");
+    }
+
+    function submitToGoogleForm() {
+      const urlInput = document.getElementById("googleFormUrlInput");
+      const formUrl = urlInput.value.trim();
+
+      if (formUrl) {
+        localStorage.setItem("hospital_google_form_url", formUrl);
+        copyLineSummary();
+        window.open(formUrl, "_blank");
+        showToast("เปิด Google Form และคัดลอกข้อมูลสรุปไว้ในคลิปบอร์ดแล้ว");
+        closeGoogleFormModal();
+      } else {
+        alert("กรุณากรอกลิงก์ Google Form ของหน่วยงาน (หรือกด 'คัดลอกข้อความสรุป' เพื่อนำไปส่งในกลุ่ม LINE / แปะลงฟอร์ม)");
+      }
+    }
+
+    function loadStoredSettings() {
+      const savedUrl = localStorage.getItem("hospital_google_form_url");
+      if (savedUrl) {
+        document.getElementById("googleFormUrlInput").value = savedUrl;
+      }
+    }
+
+    // Toast Notification helper
+    function showToast(message) {
+      const toast = document.getElementById("toastNotification");
+      const msgElem = document.getElementById("toastMessage");
+      msgElem.innerText = message;
+      toast.classList.remove("translate-y-24", "opacity-0");
+      toast.classList.add("translate-y-0", "opacity-100");
+
+      setTimeout(() => {
+        toast.classList.add("translate-y-24", "opacity-0");
+        toast.classList.remove("translate-y-0", "opacity-100");
+      }, 2500);
+    }
+
+    // Prepare print content before printing
+    window.onbeforeprint = () => {
+      const dateVal = document.getElementById("recordDate").value;
+      const timeVal = document.getElementById("recordTime").value;
+      const leaderVal = document.getElementById("nurseLeader").value || "พยาบาลวิชาชีพเวร";
+      const shiftVal = document.getElementById("nurseShift").value;
+
+      document.getElementById("printMetaSummary").innerText = 
+        `วันที่: ${formatThaiDate(dateVal)} เวลา: ${timeVal} น. | ช่วงการปฏิบัติงาน: ${shiftVal} | ผู้บันทึก/ชี้แจง: ${leaderVal}`;
+
+      const printList = document.getElementById("printTopicsList");
+      printList.innerHTML = TOPICS_CONFIG.map(t => {
+        const contentElem = document.getElementById(`topic-content-${t.id}`);
+        const selected = document.querySelector(`input[name="status-topic-${t.id}"]:checked`);
+        const content = contentElem ? contentElem.value.trim() : "(ไม่มีประเด็นบันทึกเพิ่มเติม)";
+        const status = selected ? selected.value : "กำลังดำเนินการ";
+
+        return `
+          <div class="border-b border-slate-200 pb-3">
+            <div class="flex justify-between font-bold">
+              <span>${t.id}. ${t.title} (${t.subtitle})</span>
+              <span class="text-xs px-2 py-0.5 border border-slate-400 rounded">${status}</span>
+            </div>
+            <div class="mt-1 pl-4 text-slate-800">${content.replace(/\n/g, '<br>')}</div>
+          </div>
+        `;
+      }).join('');
+    };
+  </script>
+</body>
+</html>
